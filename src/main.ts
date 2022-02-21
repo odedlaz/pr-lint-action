@@ -28,6 +28,7 @@ async function run() {
     core.warning(`this is the token: ${atlassianToken}`);
 
     const ticket = match.groups['ticket'];
+    core.warning(`this is the ticket: ${ticket}`);
     const response = await fetch(`https://${atlassianDomain}.atlassian.net/rest/api/3/issue/{${ticket}}`, {
       method: 'GET',
       headers: {
