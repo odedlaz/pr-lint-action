@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+apikey=AnzsCEfe5Ed7ZD3pQb63D93C
+
+echo curl -I --request GET \
+  --url 'https://talon-sec.atlassian.net/rest/api/3/issue/{CT-967}' \
+  --user "odedl@talon-sec.com:$apikey" \
+  --header 'Accept: application/json'
