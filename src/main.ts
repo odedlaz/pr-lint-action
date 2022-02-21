@@ -20,6 +20,11 @@ async function run() {
     }
 
     const ticket = match.groups!['ticket'];
+    if (!ticket) {
+      core.setFailed("The ticket key is missing from the title-regex");
+      return;
+    }
+
     const response = await fetch(`https://your-domain.atlassian.net/rest/api/3/issue/{${ticket}}`, {
       method: 'GET',
       headers: {
