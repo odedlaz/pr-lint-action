@@ -7,6 +7,7 @@ async function run() {
     const
       githubToken = core.getInput('github-token', { required: true }),
       atlassianToken = core.getInput('atlassian-token', { required: true }),
+      atlassianDomain = core.getInput('atlassian-domain', { required: true }),
       titleRegex = new RegExp(core.getInput('title-regex', { required: true }),
         core.getInput('title-regex-flags') || 'g'),
       title = github.context!.payload!.pull_request!.title,
@@ -27,7 +28,7 @@ async function run() {
     core.warning(atlassianToken);
 
     const ticket = match.groups['ticket'];
-    const response = await fetch(`https://your-domain.atlassian.net/rest/api/3/issue/{${ticket}}`, {
+    const response = await fetch(`https://${atlassianDomain}.atlassian.net/rest/api/3/issue/{${ticket}}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${Buffer.from(atlassianToken).toString('base64')}`,
@@ -43,7 +44,7 @@ async function run() {
     const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const newBody = body?.replace(ticket, `https://talon-sec.atlassian.net/browse/${ticket}`);
+    const newBody = body?.replace(ticket, `https://${atlassianDomain}.atlassian.net/browse/${ticket}`);
     client.pulls.update({
       owner: pr.owner,
       repo: pr.repo,

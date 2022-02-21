@@ -15,6 +15,9 @@ inputs:
   atlassian-token:
     description: 'Title regex to match'
     required: true
+  atlassian-domain:
+    description: 'Title regex to match'
+    required: true
 branding:
   icon: 'edit-3'
   color: 'blue'
