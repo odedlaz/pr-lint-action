@@ -28,7 +28,7 @@ async function run() {
       }
     });
 
-    if (await response.status != 200) {
+    if (response.status != 200) {
       core.setFailed(`Unknown JIRA ticket: ${ticket}`);
     }
 
