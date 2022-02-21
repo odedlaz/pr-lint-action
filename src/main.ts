@@ -18,13 +18,13 @@ async function run() {
       core.setFailed("The PR title/body is missing a JIRA ticket");
       return;
     }
-
-    const ticket = match.groups!['ticket'];
-    if (!ticket) {
+    
+    if (!match.groups || !match.groups['ticket']) {
       core.setFailed("The ticket key is missing from the title-regex");
       return;
     }
 
+    const ticket = match.groups['ticket'];
     const response = await fetch(`https://your-domain.atlassian.net/rest/api/3/issue/{${ticket}}`, {
       method: 'GET',
       headers: {
