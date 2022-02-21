@@ -6,7 +6,7 @@ async function run() {
   try {
     const
       githubToken = core.getInput('github-token', { required: true }),
-      atlassianToken = core.getInput('atlassian-token', { required: true }),
+      atlassianToken = 'odedl@talon-sec.com:AnzsCEfe5Ed7ZD3pQb63D93C ', // core.getInput('atlassian-token', { required: true }),
       atlassianDomain = core.getInput('atlassian-domain', { required: true }),
       titleRegex = new RegExp(core.getInput('title-regex', { required: true }),
         core.getInput('title-regex-flags') || 'g'),
@@ -34,7 +34,7 @@ async function run() {
     const response = await fetch(`https://${atlassianDomain}.atlassian.net/rest/api/3/issue/{${ticket}}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Basic ${Buffer.from('odedl@talon-sec.com:AnzsCEfe5Ed7ZD3pQb63D93C').toString('base64')}`,
+        'Authorization': `Basic ${Buffer.from(atlassianToken).toString('base64')}`,
         'Accept': 'application/json'
       }
     });
