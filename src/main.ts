@@ -4,9 +4,10 @@ import * as github from '@actions/github';
 async function run() {
   try {
     const
+      githubToken = core.getInput('github-token', { required: true }),
       titleRegex = new RegExp(core.getInput('title-regex', { required: true }),
         core.getInput('title-regex-flags') || 'g'),
-      bodyRegex = new RegExp(core.getInput('body-regex', { required: true }),
+      bodyRegex = new RegExp(core.getInput('body-regex', { required: false }),
         core.getInput('body-regex-flags') || 'g'),
       errorMessage = core.getInput('error-message') || `Please fix your PR title to match "${titleRegex.source}" with "${titleRegex.flags}"`,
       title = github.context!.payload!.pull_request!.title,
@@ -15,21 +16,16 @@ async function run() {
     core.info(`Checking "${titleRegex.source}" with "${titleRegex.flags}" flags against the PR title: "${title}"`);
     core.info(`Checking "${bodyRegex.source}" with "${bodyRegex.flags}" flags against the PR body: "${body}"`);
     let match = titleRegex.exec(title) || bodyRegex.exec(body)
-    
+
     if (!match) {
       core.setFailed(errorMessage);
       return;
     }
-    if (!match.groups) {
-      core.error('regular expression is broken');
-      core.setFailed("internal error");
-      return;
-    }
 
-    const client: github.GitHub = new github.GitHub(core.getInput('github-token'));
+    const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const ticket = match.groups['ticket'];
+    const ticket = match.groups!['ticket'];
     const newBody = body?.replace(ticket, `https://talon-sec.atlassian.net/browse/${ticket}`);
     client.pulls.update({
       owner: pr.owner,
