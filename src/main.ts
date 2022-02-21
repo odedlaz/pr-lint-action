@@ -34,7 +34,7 @@ async function run() {
     });
 
     if (response.status != 200) {
-      const data = await response.data()
+      const data = await response.json()
       core.setFailed(`Unknown JIRA ticket: ${ticket}: ${data}`);
     }
 
