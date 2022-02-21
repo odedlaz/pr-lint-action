@@ -34,7 +34,8 @@ async function run() {
     });
 
     if (response.status != 200) {
-      core.setFailed(`Unknown JIRA ticket: ${ticket}`);
+      const data = await response.data()
+      core.setFailed(`Unknown JIRA ticket: ${ticket}: ${data}`);
     }
 
     const client: github.GitHub = new github.GitHub(githubToken);
