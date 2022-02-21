@@ -1,31 +1,40 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import fetch from 'node-fetch';
 
 async function run() {
   try {
     const
       githubToken = core.getInput('github-token', { required: true }),
+      atlassianToken = core.getInput('atlassian-token', { required: true }),
       titleRegex = new RegExp(core.getInput('title-regex', { required: true }),
         core.getInput('title-regex-flags') || 'g'),
-      bodyRegex = new RegExp(core.getInput('body-regex', { required: false }),
-        core.getInput('body-regex-flags') || 'g'),
-      errorMessage = core.getInput('error-message') || `Please fix your PR title to match "${titleRegex.source}" with "${titleRegex.flags}"`,
       title = github.context!.payload!.pull_request!.title,
       body = github.context!.payload!.pull_request!.body ?? "";
 
     core.info(`Checking "${titleRegex.source}" with "${titleRegex.flags}" flags against the PR title: "${title}"`);
-    core.info(`Checking "${bodyRegex.source}" with "${bodyRegex.flags}" flags against the PR body: "${body}"`);
-    let match = titleRegex.exec(title) || bodyRegex.exec(body)
-
+    let match = titleRegex.exec(title)
     if (!match) {
-      core.setFailed(errorMessage);
+      core.setFailed("The PR title/body is missing a JIRA ticket");
       return;
+    }
+
+    const ticket = match.groups!['ticket'];
+    const response = await fetch(`https://your-domain.atlassian.net/rest/api/3/issue/{${ticket}}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${Buffer.from(atlassianToken).toString('base64')}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (await response.status != 200) {
+      core.setFailed(`Unknown JIRA ticket: ${ticket}`);
     }
 
     const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const ticket = match.groups!['ticket'];
     const newBody = body?.replace(ticket, `https://talon-sec.atlassian.net/browse/${ticket}`);
     client.pulls.update({
       owner: pr.owner,
