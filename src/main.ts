@@ -10,7 +10,7 @@ async function run() {
                              core.getInput('body-regex-flags') || 'g'),
       errorMessage = core.getInput('error-message') || `Please fix your PR title to match "${titleRegex.source}" with "${titleRegex.flags}"`,
       title = github.context!.payload!.pull_request!.title,
-      body = github.context!.payload!.pull_request!.body?;
+      body = github.context!.payload!.pull_request!.body;
 
     core.info(`Checking "${titleRegex.source}" with "${titleRegex.flags}" flags against the PR title: "${title}"`);
     core.info(`Checking "${bodyRegex.source}" with "${bodyRegex.flags}" flags against the PR body: "${body}"`);
