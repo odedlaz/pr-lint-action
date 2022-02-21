@@ -14,7 +14,7 @@ async function run() {
 
     core.info(`Checking "${titleRegex.source}" with "${titleRegex.flags}" flags against the PR title: "${title}"`);
     core.info(`Checking "${bodyRegex.source}" with "${bodyRegex.flags}" flags against the PR body: "${body}"`);
-    let match = titleRegex.exec(title) || bodyRegex.exec(body)
+    let match = titleRegex.exec(title) || bodyRegex.exec(!!body ? body : "")
     if (match == null) {
       core.setFailed(errorMessage);
       return;
@@ -24,7 +24,7 @@ async function run() {
     const pr = github.context.issue;
 
     const ticket  = match.groups['ticket'];
-    const newBody = body.replace(ticket, `https://talon-sec.atlassian.net/browse/${ticket}`);
+    const newBody = body?.replace(ticket, `https://talon-sec.atlassian.net/browse/${ticket}`);
 
     client.pulls.update({
       owner: pr.owner,
