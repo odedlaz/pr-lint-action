@@ -38,12 +38,18 @@ async function run() {
     if (response.status != 200) {
       const data = await response.text()
       core.setFailed(`Unknown JIRA ticket: ${ticket}: ${data}`);
+      return;
     }
 
     const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const newBody = body?.replace(ticket, `https://${atlassianDomain}/browse/${ticket}`);
+    const ticketRef = `[${ticket}](https://${atlassianDomain}/browse/${ticket})`;
+    if (body.length == 0 || body.includes(ticketRef)) {
+      return;
+    }
+
+    const newBody = body.replace(ticket, ticketRef);
     client.pulls.update({
       owner: pr.owner,
       repo: pr.repo,
