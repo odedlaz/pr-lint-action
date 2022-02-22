@@ -44,8 +44,10 @@ async function run() {
     const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const bodyTicket = `${ticketBodyPrefix}${ticket}`
+    const bodyTicket = `${ticketBodyPrefix}${ticket}`;
     if (!body.includes(bodyTicket)) {
+      core.info(`body doesn't include: ${bodyTicket}`);
+      core.info(body);
       return;
     }
 
