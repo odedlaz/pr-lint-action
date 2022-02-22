@@ -27,7 +27,7 @@ async function run() {
 
     core.warning(`Basic ${Buffer.from(atlassianToken).toString('base64')}`);
     const ticket = match.groups['ticket'];
-    const response = await fetch(`https://${atlassianDomain}.atlassian.net/rest/api/3/issue/{${ticket}}`, {
+    const response = await fetch(`https://${atlassianDomain}/rest/api/3/issue/${ticket}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${Buffer.from(atlassianToken).toString('base64')}`,
@@ -43,7 +43,7 @@ async function run() {
     const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const newBody = body?.replace(ticket, `https://${atlassianDomain}.atlassian.net/browse/${ticket}`);
+    const newBody = body?.replace(ticket, `https://${atlassianDomain}/browse/${ticket}`);
     client.pulls.update({
       owner: pr.owner,
       repo: pr.repo,
