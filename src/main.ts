@@ -8,6 +8,7 @@ async function run() {
       githubToken = core.getInput('github-token', { required: true }),
       atlassianToken = core.getInput('atlassian-token', { required: true }),
       atlassianDomain = core.getInput('atlassian-domain', { required: true }),
+      ticketBodyPrefix = core.getInput('ticket-body-prefix', { required: true }),
       titleRegex = new RegExp(core.getInput('title-regex', { required: true }),
         core.getInput('title-regex-flags') || 'g'),
       title = github.context!.payload!.pull_request!.title,
@@ -25,7 +26,6 @@ async function run() {
       return;
     }
 
-    core.warning(`Basic ${Buffer.from(atlassianToken).toString('base64')}`);
     const ticket = match.groups['ticket'];
     const response = await fetch(`https://${atlassianDomain}/rest/api/3/issue/${ticket}`, {
       method: 'GET',
@@ -44,12 +44,13 @@ async function run() {
     const client: github.GitHub = new github.GitHub(githubToken);
     const pr = github.context.issue;
 
-    const ticketRef = `[${ticket}](https://${atlassianDomain}/browse/${ticket})`;
-    if (body.length == 0 || body.includes(ticketRef)) {
+    const bodyTicket = `${ticketBodyPrefix}${ticket}`
+    if (!body.includes(bodyTicket)) {
       return;
     }
 
-    const newBody = body.replace(ticket, ticketRef);
+    const bodyTicketWithUrl = `${ticketBodyPrefix}[${ticket}](https://${atlassianDomain}/browse/${ticket})`;
+    const newBody = body.replace(bodyTicket, bodyTicketWithUrl);
     client.pulls.update({
       owner: pr.owner,
       repo: pr.repo,
