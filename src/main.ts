@@ -46,8 +46,7 @@ async function run() {
 
     const bodyTicket = `${ticketBodyPrefix} ${ticket}`;
     if (!body.includes(bodyTicket)) {
-      core.info(`body doesn't include: ${bodyTicket}`);
-      core.info(body);
+      core.warning(`body doesn't include: ${bodyTicket}`);
       return;
     }
 
